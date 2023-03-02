@@ -1,55 +1,75 @@
 package com.example.springsecurity2023.controller;
 
-import com.example.springsecurity2023.entity.MainTable;
 import com.example.springsecurity2023.entity.MonthlyTable;
 import com.example.springsecurity2023.modal.FinalResponse;
 import com.example.springsecurity2023.modal.MonthlyTableDto;
 import com.example.springsecurity2023.service.interfaces.MonthlyTableService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/api/monthly")
 @CrossOrigin
 
 public class MonthlyTableController {
 
-    @Autowired
-    MonthlyTableService service;
+    //AVOIDING FROM @Autowired
+    //USING LOGGER
+    //ADDING COMMITS TO ALL METHODS
+    //AVOIDING FROM AN OBJECT AND SPECIFYING A CLASS NAME (ResponseEntity<?> to ResponseEntity<FinalResponse>)
 
-    //done
+    private final MonthlyTableService service;
+
+    public MonthlyTableController(MonthlyTableService service){
+        this.service = service;
+    }
+
+    private final static Logger LOGGER = Logger.getLogger(MonthlyTableController.class.getName());
+
+
+    //CREATING A NEW MONTHLY TABLE AT THE FIRST TIME BY OWNERS
     @PostMapping
-    public ResponseEntity<?> createMonthlyTable(@RequestBody MonthlyTableDto dto){
-        FinalResponse response = service.createMonthlyTable(dto);
-        return ResponseEntity.status(response.isSuccess()?200:409).body(response);
+    public ResponseEntity<FinalResponse> createMonthlyTable(@RequestBody MonthlyTableDto dto){
+        LOGGER.info("getByEmailAndMonth("+dto+")");
+        FinalResponse finalResponse = service.createMonthlyTable(dto);
+        ResponseEntity<FinalResponse> response = ResponseEntity.status(finalResponse.isSuccess() ? 200 : 409).body(finalResponse);
+        LOGGER.info("createMonthlyTable(...)="+response);
+        return response;
     }
 
-
-    //done //for employee
+    //GETTING MONTHLY TABLE DATA BY EMPLOYEES
     @GetMapping("/getByEmailAndMonth")
-    public ResponseEntity<?> getByEmailAndMonth(@RequestParam String email,@RequestParam String month){
-        MonthlyTable response = service.getByEmailAndMonth(email, month);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<MonthlyTable> getByEmailAndMonth(@RequestParam String email,@RequestParam String month){
+        LOGGER.info("getByEmailAndMonth(email="+email+", month="+month+")");
+        MonthlyTable monthlyTable = service.getByEmailAndMonth(email, month);
+        ResponseEntity<MonthlyTable> response = ResponseEntity.ok(monthlyTable);
+        LOGGER.info("getByEmailAndMonth(...)="+response);
+        return response;
     }
 
-    //done //for owner
+    //GETTING MONTHLY TABLES DATA AS A LIST BY OWNERS
     @GetMapping("/getByTableIdAndMonth")
-    public ResponseEntity<?> getByTableIdAndMonth(@RequestParam UUID id,@RequestParam String month){
-        List<MonthlyTable> response = service.getByTableIdAndMonth(id, month);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<MonthlyTable>> getByTableIdAndMonth(@RequestParam UUID id,@RequestParam String month){
+        LOGGER.info("getByTableIdAndMonth(id="+id+", month="+month+")");
+        List<MonthlyTable> list = service.getByTableIdAndMonth(id, month);
+        ResponseEntity<List<MonthlyTable>> response = ResponseEntity.ok(list);
+        LOGGER.info("getByTableIdAndMonth(...)="+response);
+        return response;
     }
 
+    //CREATING A NEW MONTHLY TABLE AND THE REQUEST WILL COME AUTOMATICALLY IN EVERY MONTH
     @PostMapping("/monthlyUpdate")
-    public ResponseEntity<?> monthlyUpdate(@RequestBody MonthlyTableDto dto){
-        FinalResponse response = service.monthlyUpdate(dto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<FinalResponse> monthlyUpdate(@RequestBody MonthlyTableDto dto){
+        LOGGER.info("monthlyUpdate("+dto+")");
+        FinalResponse finalResponse = service.monthlyUpdate(dto);
+        ResponseEntity<FinalResponse> response = ResponseEntity.ok(finalResponse);
+        LOGGER.info("monthlyUpdate(...)="+response);
+        return response;
     }
 
 

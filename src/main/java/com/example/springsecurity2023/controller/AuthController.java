@@ -17,10 +17,10 @@ import java.util.logging.Logger;
 @CrossOrigin
 public class AuthController {
 
-    //AVOIDING @Autowired
+    //AVOIDING FROM @Autowired
     //USING LOGGER
     //ADDING COMMITS TO ALL METHODS
-    //AVOIDING AN OBJECT AND SPECIFYING A CLASS NAME (ResponseEntity<?> to ResponseEntity<FinalResponse>)
+    //AVOIDING FROM AN OBJECT AND SPECIFYING A CLASS NAME (ResponseEntity<?> to ResponseEntity<FinalResponse>)
     private final AuthService authService;
 
     private static final Logger LOGGER = Logger.getLogger(AuthController.class.getName());

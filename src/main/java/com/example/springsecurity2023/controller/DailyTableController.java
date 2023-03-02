@@ -1,49 +1,63 @@
 package com.example.springsecurity2023.controller;
 
 import com.example.springsecurity2023.entity.DailyTable;
-import com.example.springsecurity2023.entity.User;
-import com.example.springsecurity2023.entity.anotations.CurrentUser;
 import com.example.springsecurity2023.modal.DailyTableDto;
 import com.example.springsecurity2023.modal.FinalResponse;
 import com.example.springsecurity2023.modal.PenaltyOrTipDto;
 import com.example.springsecurity2023.service.interfaces.DailyTableService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/daily")
-@RequiredArgsConstructor
 @CrossOrigin
 
 public class DailyTableController {
 
-    @Autowired
-    DailyTableService service;
+    //AVOIDING FROM @Autowired
+    //USING LOGGER
+    //ADDING COMMITS TO ALL METHODS
+    //AVOIDING FROM AN OBJECT AND SPECIFYING A CLASS NAME (ResponseEntity<?> to ResponseEntity<FinalResponse>)
+    private final DailyTableService service;
 
+    public DailyTableController(DailyTableService service){
+        this.service = service;
+    }
 
-    //done
+    private final static Logger LOGGER = Logger.getLogger(DailyTableController.class.getName());
+
+    //CREATING DAILY ROW AND IT INCLUDES HOURS, DURATION ...
     @PostMapping
-    public ResponseEntity<?> createDailyRow(@RequestBody DailyTableDto dto) {
+    public ResponseEntity<FinalResponse> createDailyRow(@RequestBody DailyTableDto dto) {
+        LOGGER.info("createDailyTable("+dto+")");
         FinalResponse finalResponse = service.createDailyTable(dto);
-        return ResponseEntity.status(finalResponse.isSuccess() ? 200 : 409).body(finalResponse);
+        ResponseEntity<FinalResponse> response = ResponseEntity.status(finalResponse.isSuccess() ? 200 : 409).body(finalResponse);
+        LOGGER.info("createDailyTable(...)="+response);
+        return response;
     }
 
-    //done
+    //GETTING DAILY ROWS FOR TABLE BY ID OF PARENT TABLE
     @GetMapping
-    public ResponseEntity<?> getDailyRow(@RequestParam UUID id){
+    public ResponseEntity<List<DailyTable>> getDailyRow(@RequestParam UUID id){
+        LOGGER.info("getDailyRow("+id+")");
         List<DailyTable> list = service.getByMonthlyTableId(id);
-        return ResponseEntity.ok(list);
+        ResponseEntity<List<DailyTable>> response = ResponseEntity.ok(list);
+        LOGGER.info("getDailyRow("+response);
+        return response;
     }
 
+    //THIS PATH IS ONLY ALLOWED FOR OWNERS AND THEY CAN ADD TIPS OR PENALTIES TO THEIR EMPLOYEES
     @PutMapping("/penaltyOrTip")
-    public ResponseEntity<?> setPenaltyOrTip(@RequestBody PenaltyOrTipDto dto) {
+    public ResponseEntity<FinalResponse> setPenaltyOrTip(@RequestBody PenaltyOrTipDto dto) {
+        LOGGER.info("penaltyOrTip("+dto+")");
         FinalResponse finalResponse = service.setPenaltyOrTip(dto);
-        return ResponseEntity.status(finalResponse.isSuccess() ? 200 : 409).body(finalResponse);
+        ResponseEntity<FinalResponse> response = ResponseEntity.status(finalResponse.isSuccess() ? 200 : 409).body(finalResponse);
+        LOGGER.info("penaltyOrTip("+response);
+        return response;
     }
 
 }

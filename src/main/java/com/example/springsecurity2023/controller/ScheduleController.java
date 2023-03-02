@@ -6,35 +6,57 @@ import com.example.springsecurity2023.entity.anotations.CurrentUser;
 import com.example.springsecurity2023.modal.FinalResponse;
 import com.example.springsecurity2023.modal.ScheduleDto;
 import com.example.springsecurity2023.service.interfaces.ScheduleService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RequiredArgsConstructor
+import java.util.logging.Logger;
+
 @Controller
 @RequestMapping("/api/schedule")
 @CrossOrigin
 public class ScheduleController {
-    @Autowired
-    ScheduleService service;
 
+    //AVOIDING FROM @Autowired
+    //USING LOGGER
+    //ADDING COMMITS TO ALL METHODS
+    //AVOIDING FROM AN OBJECT AND SPECIFYING A CLASS NAME (ResponseEntity<?> to ResponseEntity<FinalResponse>)
+
+    private final ScheduleService service;
+
+    public ScheduleController(ScheduleService service){
+        this.service = service;
+    }
+
+    private final static Logger LOGGER = Logger.getLogger(ScheduleController.class.getName());
+
+    //GETTING EMPLOYEE'S SCHEDULE BY THEM
     @GetMapping
-    public ResponseEntity<?> getEmployeeSchedule(@CurrentUser User user){
+    public ResponseEntity<Schedule> getEmployeeSchedule(@CurrentUser User user){
+        LOGGER.info("getEmployeeSchedule("+user+")");
         Schedule schedule = service.getEmployeeSchedule(user);
-        return ResponseEntity.ok(schedule);
+        ResponseEntity<Schedule> response = ResponseEntity.ok(schedule);
+        LOGGER.info("getEmployeeSchedule(...)="+response);
+        return response;
     }
 
+    //GETTING EMPLOYEE'S SCHEDULE BY COMPANY OWNERS
     @GetMapping("/getByOwner")
-    public ResponseEntity<?> getByOwner(@RequestParam String email){
+    public ResponseEntity<Schedule> getByOwner(@RequestParam String email){
+        LOGGER.info("getByOwner(email="+email+")");
         Schedule schedule = service.getByOwner(email);
-        return ResponseEntity.ok(schedule);
+        ResponseEntity<Schedule> response = ResponseEntity.ok(schedule);
+        LOGGER.info("getByOwner(...)="+response);
+        return response;
     }
 
+    //CREATING A NEW SCHEDULE OR EDITING IF THAT SCHEDULE IS ALREADY EXIST BY COMPANY OWNERS (THIS PATH IS ONLY ALLOWED FOR OWNERS)
     @PutMapping
-    public ResponseEntity<?> resetSchedule(@RequestBody ScheduleDto dto){
-        FinalResponse response = service.resetSchedule(dto);
-        return ResponseEntity.status(response.isSuccess()?200:409).body(response);
+    public ResponseEntity<FinalResponse> resetSchedule(@RequestBody ScheduleDto dto){
+        LOGGER.info("resetSchedule("+dto+")");
+        FinalResponse finalResponse = service.resetSchedule(dto);
+        ResponseEntity<FinalResponse> response = ResponseEntity.status(finalResponse.isSuccess() ? 200 : 409).body(finalResponse);
+        LOGGER.info("resetSchedule(...)="+response);
+        return response;
     }
 }
