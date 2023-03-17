@@ -5,22 +5,42 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @EqualsAndHashCode(callSuper = true)
 
 public class MainTable extends UUIDEntity {
+
+    //AVOIDING FROM ANNOTATIONS (@Data, @NoArgsConstructor, @AllArgsConstructor).
 
     @Column(nullable = false)
     private String name;
 
     @ManyToOne(fetch=FetchType.EAGER)
     private Company companyId;
+
+    public MainTable() {
+    }
+
+    public MainTable(String name, Company companyId) {
+        this.name = name;
+        this.companyId = companyId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Company getCompanyId() {
+        return companyId;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCompanyId(Company companyId) {
+        this.companyId = companyId;
+    }
 }

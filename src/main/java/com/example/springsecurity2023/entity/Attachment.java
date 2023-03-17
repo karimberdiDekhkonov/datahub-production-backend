@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 
 public class Attachment extends UUIDEntity {
 
+    //AVOIDING FROM ANNOTATIONS (@Data, @NoArgsConstructor, @AllArgsConstructor).
 
     @Column(nullable = false)
     private String fileName;
